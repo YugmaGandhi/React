@@ -10,7 +10,7 @@
       "id": 2,
       "text": "Meeting at school",
       "day": "feb 6",
-      "reminder": false
+      "reminder": true
     },
     {
       "task": "kite flying",
