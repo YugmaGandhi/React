@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from './components/Header';
 import Tasks from './components/Tasks';
 import AddTask from './components/AddTask'
@@ -7,36 +7,49 @@ import Button from './components/Button'
 import './App.css';
 
 function App() {
-  const [tasks, setTask] = useState([
-    {
-      id: 1,
-      text: 'Doctors App',
-      day: 'feb 5',
-      reminder: true,
-    },
-    {
-      id: 2,
-      text: 'Meeting at school',
-      day: 'feb 6',
-      reminder: true,
-    },
-    {
-      id: 3,
-      text: 'Food shoping',
-      day: 'feb 5',
-      reminder: false,
-    },
-  ])
+  const [tasks, setTask] = useState([])
+
+  //fetch tasks 
+useEffect(()=>{
+  const getTasks = async ()=>{
+    const tasksFromServer = await fetchTasks();
+    setTask(tasksFromServer);
+  }
+
+  getTasks();
+},[])
+
+const fetchTasks = async ()=> {
+  const res = await fetch('http://localhost:5000/tasks');
+  const data = await res.json();
+
+  return data;
+};
+
 
   //Add Task
-  const addTask = (task) => {
-    const id = tasks[tasks.length-1].id + 1;
-    const newTask = {id, ...task};
-    setTask([...tasks, newTask])
+  const addTask = async (task) => {
+    const res = await fetch('http://localhost:5000/tasks',{
+      method:'POST',
+      headers:{
+        'content-type':'application/json'
+      },
+      body: JSON.stringify(task)
+    });
+
+    const data = await res.json();
+
+    // const id = tasks[tasks.length-1].id + 1;
+    // const newTask = {id, ...task};
+    setTask([...tasks, data])
   }
 
   //Delete Task
-  const deleteTask = (id) => {
+  const deleteTask = async (id) => {
+    await fetch(`http://localhost:5000/tasks/${id}`,{
+      method:'DELETE',
+    })
+
     setTask(tasks.filter((task => task.id !== id)))
   }
 
